@@ -1,6 +1,6 @@
 /**********************************************************************************************
  * Objetivo: Arquivo responsável por realizar validações, consistencias e regra de negócio
- *     para os filmes
+ * para os filmes.
  * Data: 30/01/2024 
  * Autor: Nycolle L.
  * Versão: 1.0
@@ -13,8 +13,56 @@ const message = require('../modulo/config.js');
 const filmesDAO = require('../model/DAO/filme.js');
 
 // Função para inserir um novo Filme
-const setInserirNovoFilme = async function(){
+const setInserirNovoFilme = async function(dadosFilme){
 
+let statusValidated = false;
+let novoFilmeJSON = {};
+
+    if (
+    dadosFilme.nome            == '' || dadosFilme.nome            == undefined || dadosFilme.nome             == null || dadosFilme.nome.lenght > 80                  ||
+    dadosFilme.sinopse         == '' || dadosFilme.sinopse         == undefined|| dadosFilme.sinopse           == null || dadosFilme.sinopse.lenght > 65000            ||
+    dadosFilme.duracao         == '' || dadosFilme.duracao         == undefined || dadosFilme.duracao          == null || dadosFilme.duracao.lenght > 8                ||
+    dadosFilme.data_lancamento == '' || dadosFilme.data_lancamento == undefined || dadosFilme.data_lancamento  == null || dadosFilme.data_lancamento.lenght > 10       ||
+    dadosFilme.foto_capa       == '' || dadosFilme.foto_capa       == undefined || dadosFilme.foto_capa        == null || dadosFilme.foto_capa.lenght > 200            ||
+    dadosFilme.valor_unitario.lenght > 8 || isNaN(dadosFilme.valor_unitario)
+    ){
+        return message.ERROR_REQUIRED_FIELDS; // 400
+    } else {
+
+        // Validaão para verificar se a data de relnçamento tem um conteúdo válido
+        if (dadosFilme.data_relancamento != '' && 
+        dadosFilme.data_relancamento != null &&
+        dadosFilme.data_relancamento != undefined)
+        {
+            // Verifica a quantidade de caracter
+            if (dadosFilme.data_relancamento.lenght != 10){
+                return message.ERROR_REQUIRED_FIELDS // 400
+            } else {
+                statusValidated = true; // Validação para liberar a inserção de dados no DAO
+            }
+        } else {
+            statusValidated = true; // Validação para liberar a inserção de dados no DAO
+        }
+
+        // Se a variável for verdadeira podemos encaminhar os dados para o DAO 
+        if (statusValidated) {
+
+            // Encaminha os dados para DAO inserir 
+            let novoFilme = await filmesDAO.insertFilme(dadosFilme);
+
+            // Cria o JSON de retorno com informações de requisição e os dados novos
+            if (novoFilme) {
+                novoFilmeJSON.status        = message.SUCESS_CREATE_ITEM.status;
+                novoFilmeJSON.status_code   = message.SUCESS_CREATE_ITEM.status_code;
+                novoFilmeJSON.message       = message.SUCESS_CREATE_ITEM.message;
+                novoFilmeJSON.filme         = dadosFilme;
+
+                return novoFilmeJSON; // 201
+            } else {
+                return message.ERROR_INTERNAL_SERVR_BD; // 500
+            }
+        }
+    }
 }
 
 // Função para atualizar um Filme existente
