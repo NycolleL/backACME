@@ -93,26 +93,35 @@ app.get('/v2/acmefilmes/filme/:id', cors(), async function(request, response,nex
 // EndPoint : Retorna os filmes por filtro
 app.get('/v2/acmefilmes/filtro/filme', cors(), async function(request, response, next){
 
-    let sql = `select * from tbl_filmes where id = ${id}`;
+    // let sql = `select * from tbl_filmes where id = ${id}`;
 
-    let filtroFilmes = await prisma.$queryRawUnsafe(sql);
+    let filtroFilme = filtroFilme.getFiltrarFilme;
 
-    return filtroFilmes;
+    response.status(filtroFilme.status_code)
+    response.json(filtroFilme)
+
+    // let filtroFilmes = await prisma.$queryRawUnsafe(sql);
+
+    // return filtroFilmes;
 })
-
-//Executa a API e faz ela ficar aguardando requisições
-app.listen(8080, function(){
-    console.log('API funcionando e aguardando requisições');
-});
 
 app.post('/v2/acmefilmes/filme', cors(), bodyParserJSON, async function(request, response, next){
 
+    let contentType = request.headers['content-type'];
+
+    console.log(contentType);
+    
     // Recebe os dados encaminhados no Body da requisição
     let dadosBody = request.body;
 
     // Encaminha os dados para controller inserir no BD
-    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody);
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType);
 
     response.status(resultDados.status_code);
     response.json(resultDados);
+});
+
+//Executa a API e faz ela ficar aguardando requisições
+app.listen(8080, function(){
+    console.log('API funcionando e aguardando requisições');
 });

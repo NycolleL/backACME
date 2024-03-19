@@ -11,12 +11,19 @@ const message = require('../modulo/config.js');
 
 // Import do arquivo DAO para manipular dados dos filmes
 const filmesDAO = require('../model/DAO/filme.js');
+const { itxClientDenyList } = require('@prisma/client/runtime/library.js');
 
 // Função para inserir um novo Filme
 const setInserirNovoFilme = async function(dadosFilme){
 
-let statusValidated = false;
-let novoFilmeJSON = {};
+    try {
+
+        if (String (contentType).toLowerCase == 'application/json') {
+
+    let statusValidated = false;
+    let novoFilmeJSON = {};
+
+    // Cria o JSON de retorno com informações de requisição
 
     if (
     dadosFilme.nome            == '' || dadosFilme.nome            == undefined || dadosFilme.nome             == null || dadosFilme.nome.lenght > 80                  ||
@@ -58,11 +65,18 @@ let novoFilmeJSON = {};
                 novoFilmeJSON.filme         = dadosFilme;
 
                 return novoFilmeJSON; // 201
+
             } else {
                 return message.ERROR_INTERNAL_SERVR_BD; // 500
             }
         }
     }
+    } else {
+        return message.ERROR_CONTENT_TYPE;
+    }
+} catch (error) {
+    return message.ERROR_INTERNAL_SERVER;
+}
 }
 
 // Função para atualizar um Filme existente
@@ -79,7 +93,7 @@ const setExcluirFilme = async function(){
 const getListarFilmes = async function(){
 
     // Cria o objeto JSON
-    let filmesJSON = {}
+    let filmesJSON = {};
 
     // Chama a função do DAO para retornar os dados do BD
     let dadosFilmes = await filmesDAO.selectAllFilmes();
@@ -124,6 +138,7 @@ const getBuscarFilme = async function(id){
             filmesJSON.status_code = 200;
 
             return filmesJSON;
+
             } else {
                 return message.ERROR_NOT_FOUD;
             }
@@ -133,10 +148,16 @@ const getBuscarFilme = async function(id){
     }
 }
 
+const getFiltrarFilme = async function () {
+    
+    let filtroFilme
+}
+
 module.exports = {
     setInserirNovoFilme,
     setAtualizarFilme,
     setExcluirFilme,
     getListarFilmes,
-    getBuscarFilme
+    getBuscarFilme,
+    getFiltrarFilme
 }
