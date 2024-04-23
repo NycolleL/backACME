@@ -12,7 +12,7 @@ const {PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Função para inserir um filme no Banco de Dados
-const insertFilme = async function(dadosFilme){
+const insertGenero = async function(dadosGenero){
 
  try {
     // Cria a variável SQL
@@ -21,44 +21,22 @@ const insertFilme = async function(dadosFilme){
     // Validação para verificar se a data de relançamento é vazia,
     //    pois devemos ajustar o script SQL para o BD -- OBS: essa condição
     //    é provisória, já que iremos tratar no BD com uma procedure.
-    if (dadosFilme.data_relancamento == null || 
-        dadosFilme.data_relancamento == undefined ||
-        dadosFilme.data_relancamento == ''
+    if (dadosGenero.data_relancamento == null || 
+        dadosGenero.data_relancamento == undefined ||
+        dadosGenero.data_relancamento == ''
         ){
             // Script com o valor NULL 
-    let sql = `insert into tbl_filme (nome, 
-                sinopse,
-                duracao,
-                data_lancamento,
-                data_relancameno,
-                foto_capa,
-                valor_unitario   
+    let sql = `insert into tbl_genero (
+                nome
             ) vales (
-                '${dadosFilme.nome}',
-                '${dadosFilme.sinopse}',
-                '${dadosFilme.duracao}',
-                '${dadosFilme.data_lancamento}',
-                null,
-                '${dadosFilme.foto_capa}',
-                '${dadosFilme.valor_unitario}'     
+                '${dadosGenero.nome}'   
             )`
     } else  {
         // Script SQL com a data
-        sql = `insert into tbl_filme (nome, 
-                sinopse,
-                duracao,
-                data_lancamento,
-                data_relancameno,
-                foto_capa,
-                valor_unitario   
+        sql = `insert into tbl_genero (
+            nome
             ) vales (
-                  '${dadosFilme.nome}',
-                  '${dadosFilme.sinopse}',
-                  '${dadosFilme.duracao}',
-                  '${dadosFilme.data_lancamento}',
-                  '${dadosFilme.data_relancamento}',
-                  '${dadosFilme.foto_capa}',
-                  '${dadosFilme.valor_unitario}'     
+                  '${dadosGenero.nome}'   
         )`
     }   
 
@@ -79,62 +57,62 @@ const insertFilme = async function(dadosFilme){
 }
 
 // Função para atualizar um filme no Banco de Dados
-const updateFilme = async function(){
+const updateGenero = async function(){
 
 }
 
 // Função para excluir um filme no Banco de Dados
-const deleteFilme = async function(){
+const deleteGenero = async function(){
 
 }
 
 // Função para retornar todos os filmes do Banco de Dados
-const selectAllFilmes = async function(){
+const selectAllGeneros = async function(){
 
     // Script SQL para buscar todos os registros no banco de dados
-    let sql = 'select * from tbl_filmes'
+    let sql = 'select * from tbl_generos'
 
     // $queryRawUnsafe(sql)                  - Encaminha uma variavel
     // $queryRaw('select * from tbl_filme')  - Encaminha direto para o script
 
     // Executa o scriptSQL no BD e guarda o retorno dos dados
-    let rsFilmes = await prisma.$queryRawUnsafe(sql);
+    let rsGeneros = await prisma.$queryRawUnsafe(sql);
 
     // Validação para retornar os dados ou retornar falso
     if (rsFilmes.length > 0)
-        return rsFilmes;
+        return rsGeneros;
     else
         return false;
 }
 
 // Função buscar um filme no Banco de Dados filtrando pelo ID
-const selectByIdFilme = async function(id){
+const selectByIdGenero = async function(id){
 
     try {
     // Script SQL para pesquisar o filme pelo ID
-    let sql = `select * from tbl_filmes where id = ${id}`;
+    let sql = `select * from tbl_generos where id = ${id}`;
 
     // Executa o scripit SQL no BD e retorna o filme
-    let rsFilme = await prisma.$queryRawUnsafe(sql);
+    let rsGeneros = await prisma.$queryRawUnsafe(sql);
 
-    return rsFilme;
+    return rsGeneros;
 
     } catch (error) {
         return false;
     }
 }
 
-const selectByFilterFilme = async function () {
+const selectByFilterGenero = async function () {
 
-    let sql = `select * from tbl_filme where id = ${id}`;
+    let sql = `select * from tbl_generos where id = ${id}`;
 }
 
 module.exports = {
-    insertFilme,
-    updateFilme,
-    deleteFilme,
-    selectAllFilmes,
-    selectByIdFilme
+    insertGenero,
+    updateGenero,
+    deleteGenero,
+    selectAllGeneros,
+    selectByIdGenero
 }
 
 // 200 SUCESSO
